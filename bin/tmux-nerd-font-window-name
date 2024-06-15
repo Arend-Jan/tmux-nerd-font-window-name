@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if ! command -v yq >/dev/null 2>&1; then
+	echo "$1 ⚠︎ yq missing"
+	exit 1
+fi
+
 NAME="$1"
 PANES="$2"
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -36,7 +41,12 @@ fi
 
 SHOW_NAME="$(get_config_value '.config.show-name')"
 if [ "$SHOW_NAME" = true ]; then
-	ICON="$ICON $NAME"
+	ICON_POSITION="$(get_config_value '.config.icon-position')"
+	if [ "$ICON_POSITION" == "right" ]; then
+		ICON="$NAME $ICON"
+	else
+		ICON="$ICON $NAME"
+	fi
 fi
 
 echo "$ICON"
